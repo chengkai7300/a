@@ -1,0 +1,40 @@
+{
+  "pins" : [
+    {
+      "identity" : "kingfisher",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/onevcat/Kingfisher.git",
+      "state" : {
+        "branch" : "master",
+        "revision" : "9375e4a0e5db3698c1f92bd5d1dc88b0b71caa8b"
+      }
+    },
+    {
+      "identity" : "swiftrichtext",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/sethcreate/SwiftRichText",
+      "state" : {
+        "revision" : "86d3f06a48d1641e348f162afc99832b42cb9ce9"
+      }
+    },
+    {
+      "identity" : "swiftsoup",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/scinfu/SwiftSoup.git",
+      "state" : {
+        "revision" : "774dc9c7213085db8aa59595e27c1cd22e428904",
+        "version" : "2.3.2"
+      }
+    },
+    {
+      "identity" : "swiftui-webview",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/kylehickinson/SwiftUI-WebView",
+      "state" : {
+        "revision" : "a67dcaff2377573a51f75761bb6e768b78931909",
+        "version" : "0.3.0"
+      }
+    }
+  ],
+  "version" : 2
+}
