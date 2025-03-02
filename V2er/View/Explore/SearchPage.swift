@@ -18,26 +18,30 @@ struct SearchPage: StateView {
 
     var body: some View {
         NavigationView {
-            LazyVStack (alignment: .leading ,spacing: 0) {
-                ForEach(state.model?.hits ?? []) { item in
-                    NavigationLink(destination: FeedDetailPage(id: item.id)) {
-                        SearchResultItemView(hint: item)
+            VStack(spacing: 0) {
+                LazyVStack (alignment: .leading ,spacing: 0) {
+                    ForEach(state.model?.hits ?? []) { item in
+                        NavigationLink(destination: FeedDetailPage(id: item.id)) {
+                            SearchResultItemView(hint: item)
+                        }
                     }
                 }
+                .navigationBarHidden(true)
+                .loadMore(state.updatable) {
+                    await run(action: SearchActions.LoadMoreStart())
+                }
+                .onChange(of: state.sortWay) { sort in
+                    dispatch(SearchActions.Start())
+                }
+                .ignoresSafeArea(.container)
+                .background(Color.bgColor)
+                
+                // 将搜索框视图放在底部
+                searchView
             }
-            .navigationBarHidden(true)
-            .loadMore(state.updatable) {
-                await run(action: SearchActions.LoadMoreStart())
-            }
-            .onChange(of: state.sortWay) { sort in
-                dispatch(SearchActions.Start())
-            }
-            .safeAreaInset(edge: .top, spacing: 0) { searchView }
             .ignoresSafeArea(.container)
-            .background(Color.bgColor)
+            .navigationBarHidden(true)
         }
-        .ignoresSafeArea(.container)
-        .navigationBarHidden(true)
     }
 
 
@@ -60,44 +64,23 @@ struct SearchPage: StateView {
                             }
                         }
                 }
-                .padding(7)
-                .padding(.horizontal, 8)
-                .background(Color.itemBg.opacity(0.6))
-                .cornerRadius(8)
+                .padding(12) // 增加内边距
+                .background(Color.white) // 背景色改为白色
+                .cornerRadius(20) // 增加圆角
+                .shadow(color: Color.gray.opacity(0.3), radius: 5, x: 0, y: 2) // 添加阴影
                 .padding(.horizontal, 16)
                 .padding(.top, 5)
-                Button("取消") {
-                    // Cancel Search
-                    if focused {
-                        focused = false
-                    } else {
-                        self.presentationMode.wrappedValue.dismiss()
-                    }
-                }
-                .foregroundColor(.tintColor)
             }
-            .padding(.top, topSafeAreaInset().top)
             .padding(.trailing, 10)
-            sortPickerView
-                .padding(10)
-            Divider()
+//            Divider()
+            Rectangle() // 添加一个固定高度的Rectangle
+            .frame(height: 30) // 可根据需要调整高度/
+            .foregroundColor(.clear) // 设置为透明色
         }
         .visualBlur()
         .background(Color.gray.opacity(0.35))
     }
 
-    @ViewBuilder
-    private var sortPickerView: some View {
-        Picker("Sort", selection: bindingState.sortWay) {
-            Text("相关")
-                .tag("sumup")
-            Text("最新")
-                .tag("created")
-        }
-        .font(.headline)
-        .pickerStyle(.segmented)
-        .padding(.horizontal)
-    }
 }
 
 fileprivate struct SearchResultItemView: View {
