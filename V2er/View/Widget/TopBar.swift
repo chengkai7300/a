@@ -42,12 +42,6 @@ struct TopBar: View {
                         .hide()
 //                        .to { TestView() }
                     Spacer()
-                    Image(systemName: "magnifyingglass")
-                        .foregroundColor(.primary)
-                        .font(.system(size: 22))
-                        .padding(6)
-                        .forceClickable()
-                        .to { SearchPage() }
                 }
                 .padding(.horizontal, 10)
                 .padding(.vertical, 8)
