@@ -15,6 +15,7 @@ struct TabBar: View {
     }
     var unReadMsg: Int = 0
     var tabs: [TabItem]
+    @State private var searchText: String = "" // 新增：用于存储搜索框输入的文本
     
     init(_ unReadMsg: Int = 0) {
         self.tabs = [TabItem(id: TabId.feed, text: "最新1", icon: "feed_tab"),
@@ -27,6 +28,19 @@ struct TabBar: View {
 
     var body: some View {
         VStack(spacing: 0) {
+            
+            // 新增：搜索框
+            HStack {
+                Image(systemName: "magnifyingglass")
+                .foregroundColor(.gray)
+                TextField("搜索", text: $searchText)
+                .padding(7)
+                .background(Color(.systemGray6))
+                .cornerRadius(8)
+            }
+            .padding(.horizontal)
+            .padding(.top)
+            
             Divider().frame(height: 0.1)
             HStack(spacing: 0) {
                 ForEach (self.tabs, id: \.self) { tab in
