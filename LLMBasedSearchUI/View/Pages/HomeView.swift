@@ -29,8 +29,31 @@ struct HomeView: View {
                 .padding()
             }
             
+            // 固定大小的文本输出框
+            ScrollViewReader { proxy in
+                ScrollView {
+                    Text(viewModel.outputText)
+                        .font(.system(.body, design: .monospaced)) // 使用等宽字体
+                        .frame(maxWidth: .infinity, alignment: .leading) // 左对齐
+                        .padding()
+                        .id("outputText") // 为 Text 设置唯一标识
+                }
+                .frame(width: 360, height: 200) // 固定大小
+                .background(Color(.systemFill))
+                .cornerRadius(10)
+                .onChange(of: viewModel.outputText) { _ in
+                    // 文本更新时自动滚动到底部
+                    withAnimation {
+                        proxy.scrollTo("outputText", anchor: .bottom)
+                    }
+                }
+            }
+            
             // 底部输入栏
             bottomInputBar
+        }
+        .onAppear {
+            viewModel.simulateOutput() // 启动模拟输出
         }
     }
     
@@ -38,7 +61,7 @@ struct HomeView: View {
     private var bottomInputBar: some View {
         HStack(spacing: 12) {
             // 文本输入框
-            TextField("输入消息...", text: $viewModel.messageText)
+            TextField("输入需求...", text: $viewModel.messageText)
                 .textFieldStyle(.roundedBorder)
                 .padding(.leading)
             
@@ -57,4 +80,8 @@ struct HomeView: View {
         .padding(.vertical, 8)
         .background(.regularMaterial)
     }
+}
+
+#Preview {
+    ContentView()
 }

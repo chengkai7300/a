@@ -15,6 +15,7 @@ class ContentViewModel: ObservableObject {
     @Published var selectedSubTab = 0
     @Published var isRecording = false
     @Published var messageText = ""
+    @Published var outputText: String = ""
     
     // 常量配置
     let mainTabs = ["首页", "发现", "我的"]
@@ -40,5 +41,14 @@ class ContentViewModel: ObservableObject {
         guard !messageText.isEmpty else { return }
         // 这里添加实际的消息处理逻辑
         messageText = ""
+    }
+    
+    // 模拟后台输出
+    func simulateOutput() {
+        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
+            DispatchQueue.main.async {
+                self.outputText += "新消息: \(Date())\n"
+            }
+        }
     }
 }
