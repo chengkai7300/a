@@ -16,6 +16,16 @@ struct TabBar: View {
     var unReadMsg: Int = 0
     var tabs: [TabItem]
     @State private var searchText: String = "" // 新增：用于存储搜索框输入的文本
+    @State private var showMessageBox = false
+    struct MessageItem: Identifiable {
+        let id = UUID()
+        let content: String
+        let timestamp: Date
+    }
+    
+    @State private var messages: [MessageItem] = []
+    @State private var displayedMessages: [MessageItem] = []
+    @State private var timer: Timer? = nil
     
     init(_ unReadMsg: Int = 0) {
         self.tabs = [TabItem(id: TabId.feed, text: "最新1", icon: "feed_tab"),
@@ -37,9 +47,107 @@ struct TabBar: View {
                 .padding(7)
                 .background(Color(.systemGray6))
                 .cornerRadius(8)
+                
+                Button(action: {
+                    showMessageBox.toggle()
+                }) {
+                    Image(systemName: "bell")
+                        .foregroundColor(.gray)
+                        .padding(7)
+                }
             }
             .padding(.horizontal)
             .padding(.top)
+            
+            if showMessageBox {
+                VStack(spacing: 0) {
+                    HStack {
+                        Text("消息")
+                            .font(.headline)
+                            .padding(.leading, 16)
+                        Spacer()
+                        Button(action: {
+                            withAnimation {
+                                showMessageBox = false
+                            }
+                        }) {
+                            Image(systemName: "chevron.down")
+                                .foregroundColor(.gray)
+                                .padding(8)
+                        }
+                    }
+                    .padding(.top, 8)
+                    
+                    Divider()
+                    
+                    ScrollViewReader { proxy in
+                        ScrollView {
+                            VStack(spacing: 0) {
+                                ForEach(displayedMessages) { message in
+                                    VStack(alignment: .leading, spacing: 4) {
+                                        Text(message.content)
+                                        Text(message.timestamp, style: .time)
+                                            .font(.caption)
+                                            .foregroundColor(.gray)
+                                    }
+                                    .padding(12)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .transition(.opacity.combined(with: .move(edge: .top)))
+                                    .animation(.easeInOut(duration: 0.3))
+                                    Divider()
+                                }
+                            }
+                            .onAppear {
+                                // 模拟从后台获取消息
+                                let demoMessages = [
+                                    "系统消息1: 欢迎使用V2er",
+                                    "系统消息2: 您有3条新通知",
+                                    "系统消息3: 今日热点话题更新",
+                                    "系统消息4: 好友请求待处理",
+                                    "系统消息5: 系统维护通知",
+                                    "系统消息6: 新版本可用",
+                                    "系统消息7: 您的账户已登录新设备",
+                                    "系统消息8: 社区活动即将开始",
+                                    "系统消息9: 您收到了5个赞",
+                                    "系统消息10: 私信提醒"
+                                ]
+                                
+                                self.messages = demoMessages.enumerated().map { index, content in
+                                    MessageItem(content: content, timestamp: Date().addingTimeInterval(-Double(index) * 60))
+                                }
+                                
+                                // 启动定时器逐条显示消息
+                                self.timer?.invalidate()
+                                self.displayedMessages = []
+                                var currentIndex = 0
+                                self.timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { timer in
+                                    if currentIndex < self.messages.count {
+                                        withAnimation {
+                                            self.displayedMessages.insert(self.messages[currentIndex], at: 0)
+                                            proxy.scrollTo(self.messages[currentIndex].id, anchor: .top)
+                                        }
+                                        currentIndex += 1
+                                    } else {
+                                        timer.invalidate()
+                                    }
+                                }
+                            }
+                            .onDisappear {
+                                self.timer?.invalidate()
+                                self.timer = nil
+                            }
+                        }
+                    }
+                }
+                .frame(maxWidth: .infinity, maxHeight: 300)
+                .background(Color(.systemBackground))
+                .cornerRadius(8)
+                .shadow(radius: 5)
+                .padding(.horizontal)
+                .padding(.bottom, 8)
+                .transition(.move(edge: .top))
+                .zIndex(1)
+            }
             
             Divider().frame(height: 0.1)
             HStack(spacing: 0) {
